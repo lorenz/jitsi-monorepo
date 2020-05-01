@@ -3,21 +3,27 @@ load("@rules_java//java:defs.bzl", "java_binary", "java_library", "java_test")
 package(default_visibility = ["//visibility:public"])
 
 java_library(
-    name = "videobridge",
-    srcs = glob(["src/main/java/org/jitsi/**/*.java"]),
+    name = "libjitsi",
+    srcs = glob(
+        include = ["src/org/jitsi/**/*.java"],
+    ),
     deps = [
+        "//bccontrib",
+        "//gpl-dependencies",
+        "//osgi",
         "//rtp",
         "//utils/jitsi-utils",
-        "//xmpp-extensions",
-        "@maven//:com_github_spotbugs_spotbugs_annotations",
+        "//zrtp4j",
+        "@fmj",
+        "@maven//:ch_imvs_sdes4j",
         "@maven//:com_googlecode_json_simple_json_simple",
-        "@maven//:org_apache_commons_commons_lang3",
-        "@maven//:org_igniterealtime_smack_smack_core",
-        "@maven//:org_igniterealtime_smack_smack_extensions",
+        "@maven//:net_java_dev_jna_jna",
+        "@maven//:org_bouncycastle_bcpkix_jdk15on",
+        "@maven//:org_bouncycastle_bcprov_jdk15on",
         "@maven//:org_jetbrains_annotations",
-        "@maven//:org_jetbrains_kotlin_kotlin_stdlib",
-        "@maven//:org_jxmpp_jxmpp_core",
-        "@maven//:org_jxmpp_jxmpp_jid",
+        "@maven//:org_opentelecoms_sdp_java_sdp_nist_bridge",
+        "@maven//:org_opentelecoms_sdp_sdp_api",
+        "@maven//:org_osgi_org_osgi_core",
     ],
 )
 

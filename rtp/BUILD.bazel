@@ -1,0 +1,12 @@
+load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_jvm_library")
+
+kt_jvm_library(
+    name = "rtp",
+    srcs = glob(["src/main/kotlin/org/jitsi/**/*.kt", "src/main/kotlin/org/jitsi/**/*.java"]),
+    deps = [
+	"//utils/jitsi-utils",
+	"//srtp",
+	"@maven//:com_github_kotlin_graphics_kotlin_unsigned",
+    ],
+    visibility = ["//visibility:public"],
+)

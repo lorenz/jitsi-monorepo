@@ -302,6 +302,7 @@ public class ZidRecord {
      * @return
      *    Returns true is RS1 is not expired (valid), false otherwise. 
      */
+    @SuppressWarnings("BadShiftAmount")
     public boolean isRs1NotExpired() {
         long current = (System.currentTimeMillis() / 1000);
         long validThru;
@@ -329,6 +330,7 @@ public class ZidRecord {
      * @return
      *    Returns true is RS2 is not expired (valid), false otherwise. 
      */
+    @SuppressWarnings("BadShiftAmount")
     public boolean isRs2NotExpired() {
         long current = (System.currentTimeMillis() / 1000);
         long validThru;

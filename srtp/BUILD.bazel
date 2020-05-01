@@ -3,21 +3,19 @@ load("@rules_java//java:defs.bzl", "java_binary", "java_library", "java_test")
 package(default_visibility = ["//visibility:public"])
 
 java_library(
-    name = "videobridge",
+    name = "srtp",
     srcs = glob(["src/main/java/org/jitsi/**/*.java"]),
     deps = [
-        "//rtp",
+        "//bccontrib",
         "//utils/jitsi-utils",
-        "//xmpp-extensions",
-        "@maven//:com_github_spotbugs_spotbugs_annotations",
-        "@maven//:com_googlecode_json_simple_json_simple",
         "@maven//:org_apache_commons_commons_lang3",
+        "@maven//:org_bouncycastle_bcprov_jdk15on",
         "@maven//:org_igniterealtime_smack_smack_core",
         "@maven//:org_igniterealtime_smack_smack_extensions",
         "@maven//:org_jetbrains_annotations",
-        "@maven//:org_jetbrains_kotlin_kotlin_stdlib",
         "@maven//:org_jxmpp_jxmpp_core",
         "@maven//:org_jxmpp_jxmpp_jid",
+        "@maven//:xpp3_xpp3",
     ],
 )
 
