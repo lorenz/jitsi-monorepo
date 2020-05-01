@@ -1,0 +1,24 @@
+load("@rules_java//java:defs.bzl", "java_binary", "java_library", "java_test")
+
+package(default_visibility = ["//visibility:public"])
+
+java_library(
+    name = "videobridge",
+    srcs = glob(["src/main/java/org/jitsi/**/*.java"]),
+    deps = [
+	"@maven//:org_jetbrains_annotations",
+	"//utils/jitsi-utils",
+    ],
+)
+
+#java_test(
+#    name = "tests",
+#    srcs = glob(["src/test/java/org/jitsi/**/*.java"]),
+#    test_class = "org.jitsi.impl.osgi.framework.OSGiTest",
+#    deps = [
+#        ":jitsi-utils",
+#	"@maven//:org_osgi_org_osgi_core",
+#        "@maven//:junit_junit",
+#    ],
+#)
+
