@@ -45,6 +45,7 @@ maven_install(
         "org.eclipse.jetty:jetty-server:9.4.15.v20190215",
         "org.eclipse.jetty:jetty-servlet:9.4.15.v20190215",
         "org.eclipse.jetty:jetty-util:9.4.15.v20190215",
+        "org.eclipse.jetty.websocket:websocket-server:9.4.15.v20190215",
         "org.xeustechnologies:jcl-core:2.8",
         "org.igniterealtime:tinder:1.3.0",
         "org.igniterealtime.whack:core:2.0.1",
