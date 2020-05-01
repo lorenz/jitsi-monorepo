@@ -55,6 +55,7 @@ maven_install(
         "org.glassfish.jersey.media:jersey-media-json-jackson:2.30.1",
         "org.javassist:javassist:3.22.0-CR2",
         "org.bitlet:weupnp:0.1.4",
+        "io.callstats:callstats-java-sdk:5.0.0",
     ],
     fetch_sources = True,
     repositories = [

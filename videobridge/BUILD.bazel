@@ -1,18 +1,20 @@
 load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_jvm_library")
+load("@rules_java//java:defs.bzl", "java_binary")
 
 package(default_visibility = ["//visibility:public"])
 
 kt_jvm_library(
-    name = "videobridge",
+    name = "libvideobridge",
     srcs = glob([
-        "src/main/java/org/jitsi/**/*.java",
-        "src/main/kotlin/org/jitsi/**/*.kt",
+        "src/main/**/*.java",
+        "src/main/**/*.kt",
     ]),
     deps = [
         "//ice4j",
         "//media-transform",
         "//rtp",
         "//sctp/sctp",
+        "//stats",
         "//utils/jitsi-utils",
         "//xmpp-extensions",
         "@maven//:com_github_spotbugs_spotbugs_annotations",
@@ -25,6 +27,7 @@ kt_jvm_library(
         "@maven//:org_igniterealtime_smack_smack_core",
         "@maven//:org_igniterealtime_smack_smack_extensions",
         "@maven//:org_jetbrains_annotations",
+        "@maven//:org_jetbrains_kotlin_kotlin_reflect",
         "@maven//:org_jetbrains_kotlin_kotlin_stdlib",
         "@maven//:org_jxmpp_jxmpp_core",
         "@maven//:org_jxmpp_jxmpp_jid",
@@ -32,13 +35,9 @@ kt_jvm_library(
     ],
 )
 
-#java_test(
-#    name = "tests",
-#    srcs = glob(["src/test/java/org/jitsi/**/*.java"]),
-#    test_class = "org.jitsi.impl.osgi.framework.OSGiTest",
-#    deps = [
-#        ":jitsi-utils",
-#	"@maven//:org_osgi_org_osgi_core",
-#        "@maven//:junit_junit",
-#    ],
-#)
+java_binary(
+    name = "videobridge",
+    main_class = "org.jitsi.videobridge.Main",
+    resources = ["//sctp/jniwrapper/native/src/main/resources/lib/linux:libjnisctp"],
+    runtime_deps = [":libvideobridge"],
+)
