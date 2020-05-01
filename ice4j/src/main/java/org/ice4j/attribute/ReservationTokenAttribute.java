@@ -99,8 +99,8 @@ public class ReservationTokenAttribute
         binValue[1] = (byte)(type & 0x00FF);
 
         //Length
-        binValue[2] = (byte)(8 >> 8);
-        binValue[3] = (byte)(8 & 0x00FF);
+        binValue[2] = 0;
+        binValue[3] = 8;
 
         //reservationToken
         System.arraycopy(reservationToken, 0, binValue, 4, 8);
