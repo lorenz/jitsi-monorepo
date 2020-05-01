@@ -1,0 +1,14 @@
+/classes
+/dist
+/.idea
+/jitsi-lgpl-dependencies.jar
+/.settings/*
+/target
+*.class
+*.swp
+/.settings
+.classpath
+.project
+/cmake-build-debug
+/build*
+/thirdparty/*.gz
