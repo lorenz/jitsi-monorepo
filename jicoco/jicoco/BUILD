@@ -1,0 +1,40 @@
+load("@rules_java//java:defs.bzl", "java_binary", "java_library", "java_test")
+
+package(default_visibility = ["//visibility:public"])
+
+java_library(
+    name = "jicoco",
+    srcs = glob(["src/main/java/org/jitsi/**/*.java"]),
+    deps = [
+        "//osgi",
+        "//utils/jitsi-utils",
+        "//xmpp-extensions",
+        "@maven//:com_datadoghq_java_dogstatsd_client",
+        "@maven//:com_fasterxml_jackson_core_jackson_annotations",
+        "@maven//:com_googlecode_json_simple_json_simple",
+        "@maven//:com_typesafe_config",
+        "@maven//:dom4j_dom4j",
+        "@maven//:jakarta_ws_rs_jakarta_ws_rs_api",
+        "@maven//:javax_servlet_javax_servlet_api",
+        "@maven//:org_apache_commons_commons_lang3",
+        "@maven//:org_eclipse_jetty_jetty_proxy",
+        "@maven//:org_eclipse_jetty_jetty_server",
+        "@maven//:org_eclipse_jetty_jetty_servlet",
+        "@maven//:org_eclipse_jetty_jetty_util",
+        "@maven//:org_glassfish_hk2_external_jakarta_inject",
+        "@maven//:org_glassfish_jersey_containers_jersey_container_jetty_http",
+        "@maven//:org_glassfish_jersey_containers_jersey_container_servlet",
+        "@maven//:org_glassfish_jersey_inject_jersey_hk2",
+        "@maven//:org_glassfish_jersey_media_jersey_media_json_jackson",
+        "@maven//:org_igniterealtime_smack_smack_core",
+        "@maven//:org_igniterealtime_smack_smack_extensions",
+        "@maven//:org_igniterealtime_smack_smack_tcp",
+        "@maven//:org_igniterealtime_tinder",
+        "@maven//:org_igniterealtime_whack_core",
+        "@maven//:org_jxmpp_jxmpp_core",
+        "@maven//:org_jxmpp_jxmpp_jid",
+        "@maven//:org_osgi_org_osgi_core",
+        "@maven//:org_xeustechnologies_jcl_core",
+        "@maven//:xpp3_xpp3",
+    ],
+)
