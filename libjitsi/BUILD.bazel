@@ -9,7 +9,7 @@ java_library(
     ),
     deps = [
         "//bccontrib",
-        "//gpl-dependencies",
+        "//lgpl-dependencies",
         "//osgi",
         "//rtp",
         "//utils/jitsi-utils",

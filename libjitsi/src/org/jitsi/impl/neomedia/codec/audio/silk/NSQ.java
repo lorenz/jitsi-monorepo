@@ -44,6 +44,7 @@ public class NSQ
      * @param Lambda_Q10
      * @param LTP_scale_Q14 LTP state scaling
      */
+    @SuppressWarnings("SelfAssignment") // WTF?
     static void SKP_Silk_NSQ(
         SKP_Silk_encoder_state     psEncC,             /* I/O  Encoder State                       */
         SKP_Silk_encoder_control   psEncCtrlC,         /* I    Encoder Control                     */

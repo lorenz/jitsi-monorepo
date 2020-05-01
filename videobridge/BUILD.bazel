@@ -1,11 +1,15 @@
-load("@rules_java//java:defs.bzl", "java_binary", "java_library", "java_test")
+load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_jvm_library")
 
 package(default_visibility = ["//visibility:public"])
 
-java_library(
+kt_jvm_library(
     name = "videobridge",
-    srcs = glob(["src/main/java/org/jitsi/**/*.java"]),
+    srcs = glob([
+        "src/main/java/org/jitsi/**/*.java",
+        "src/main/kotlin/org/jitsi/**/*.kt",
+    ]),
     deps = [
+        "//libjitsi",
         "//rtp",
         "//utils/jitsi-utils",
         "//xmpp-extensions",
@@ -18,6 +22,7 @@ java_library(
         "@maven//:org_jetbrains_kotlin_kotlin_stdlib",
         "@maven//:org_jxmpp_jxmpp_core",
         "@maven//:org_jxmpp_jxmpp_jid",
+        "@maven//:org_osgi_org_osgi_core",
     ],
 )
 

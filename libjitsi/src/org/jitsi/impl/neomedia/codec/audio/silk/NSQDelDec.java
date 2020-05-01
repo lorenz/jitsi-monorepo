@@ -85,6 +85,7 @@ class NSQ_sample_struct implements Cloneable
  */
 public class NSQDelDec
 {
+    @SuppressWarnings("SelfAssignment")
     static void SKP_Silk_NSQ_del_dec(
         SKP_Silk_encoder_state    psEncC,             /* I/O  Encoder State                       */
         SKP_Silk_encoder_control  psEncCtrlC,         /* I    Encoder Control                     */
