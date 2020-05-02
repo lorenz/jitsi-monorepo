@@ -24,6 +24,7 @@ java_library(
             "**/net/sf/fmj/ds/**",
             "**/net/sf/fmj/gui/**",
             "**/net/sf/fmj/test/**",
+            "fmj/src/org/rubycoder/gsm/PlayGSM.java",
         ],
     ),
     deps = [],

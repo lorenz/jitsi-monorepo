@@ -115,7 +115,7 @@ Export-Package: org.bouncycastle,org.bouncycastle.asn1;uses:="org.boun
  o.generators,org.bouncycastle.crypto.digests,org.bouncycastle.asn1.te
  letrust,org.bouncycastle.asn1.nist,org.bouncycastle.crypto.encodings,
  org.bouncycastle.asn1.pkcs,org.bouncycastle.crypto.engines,org.bouncy
- castle.asn1.x509",org.bouncycastle.crypto.tls;uses:="org.bouncycastle
+ castle.asn1.x509",org.bouncycastle.tls;uses:="org.bouncycastle
  .asn1.x509,org.bouncycastle.asn1,org.bouncycastle.crypto.digests,org.
  bouncycastle.crypto,org.bouncycastle.util,org.bouncycastle.crypto.agr
  eement,org.bouncycastle.crypto.params,org.bouncycastle.crypto.modes,o
