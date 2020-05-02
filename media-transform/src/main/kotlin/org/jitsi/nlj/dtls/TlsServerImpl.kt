@@ -107,14 +107,6 @@ class TlsServerImpl(
         )
     }
 
-    override fun getRSAEncryptionCredentials(): TlsCredentialedDecryptor {
-        return BcDefaultTlsCredentialedDecryptor(
-            (context.crypto as BcTlsCrypto),
-            certificateInfo.certificate,
-            PrivateKeyFactory.createKey(certificateInfo.keyPair.private.encoded)
-        )
-    }
-
     override fun getECDSASignerCredentials(): TlsCredentialedSigner {
         return BcDefaultTlsCredentialedSigner(
             TlsCryptoParameters(context),

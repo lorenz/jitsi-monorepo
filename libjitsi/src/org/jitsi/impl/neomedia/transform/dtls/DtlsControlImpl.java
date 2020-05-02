@@ -28,7 +28,9 @@ import org.bouncycastle.cert.*;
 import org.bouncycastle.crypto.*;
 import org.bouncycastle.crypto.generators.*;
 import org.bouncycastle.crypto.params.*;
-import org.bouncycastle.crypto.tls.*;
+import org.bouncycastle.tls.*;
+import org.bouncycastle.tls.crypto.*;
+import org.bouncycastle.tls.crypto.impl.bc.*;
 import org.bouncycastle.crypto.util.*;
 import org.bouncycastle.operator.*;
 import org.bouncycastle.operator.bc.*;
@@ -387,12 +389,9 @@ public class DtlsControlImpl
         org.bouncycastle.asn1.x509.Certificate x509Certificate
             = generateX509Certificate(generateCN(), keyPair);
 
-        org.bouncycastle.crypto.tls.Certificate certificate
-            = new org.bouncycastle.crypto.tls.Certificate(
-                    new org.bouncycastle.asn1.x509.Certificate[]
-                    {
-                        x509Certificate
-                    });
+        org.bouncycastle.tls.Certificate certificate
+            = new org.bouncycastle.tls.Certificate(new BcTlsCertificate[]{
+                new BcTlsCertificate(new BcTlsCrypto(new SecureRandom()), x509Certificate) } );
         String localFingerprintHashFunction
             = findHashFunction(x509Certificate);
         String localFingerprint
@@ -925,14 +924,14 @@ public class DtlsControlImpl
      * over the signaling path
      */
     boolean verifyAndValidateCertificate(
-            org.bouncycastle.crypto.tls.Certificate certificate)
+            org.bouncycastle.tls.Certificate certificate)
         throws Exception
     {
         boolean b = false;
 
         try
         {
-            org.bouncycastle.asn1.x509.Certificate[] certificateList
+            TlsCertificate[] certificateList
                 = certificate.getCertificateList();
 
             if (certificateList.length == 0)
@@ -942,10 +941,10 @@ public class DtlsControlImpl
             }
             else
             {
-                for (org.bouncycastle.asn1.x509.Certificate x509Certificate
+                for (org.bouncycastle.tls.crypto.TlsCertificate tlsCertificate
                         : certificateList)
                 {
-                    verifyAndValidateCertificate(x509Certificate);
+                    verifyAndValidateCertificate(org.bouncycastle.asn1.x509.Certificate.getInstance(tlsCertificate.getEncoded()));
                 }
                 b = true;
             }

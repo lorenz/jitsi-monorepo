@@ -19,7 +19,7 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-import org.bouncycastle.crypto.tls.*;
+import org.bouncycastle.tls.*;
 import org.jitsi.impl.neomedia.*;
 import org.jitsi.impl.neomedia.codec.video.h264.*;
 import org.jitsi.service.neomedia.*;
@@ -135,7 +135,7 @@ public class DatagramTransportImpl
 
     /**
      * Works around a bug in the Bouncy Castle Crypto APIs which may cause
-     * <tt>org.bouncycastle.crypto.tls.DTLSReliableHandshake.receiveMessage()</tt>
+     * <tt>org.bouncycastle.tls.DTLSReliableHandshake.receiveMessage()</tt>
      * to enter an endless loop.
      *
      * @param cause the <tt>Throwable</tt> which would have been thrown if the
@@ -145,7 +145,7 @@ public class DatagramTransportImpl
     {
         for (StackTraceElement stackTraceElement : cause.getStackTrace())
         {
-            if ("org.bouncycastle.crypto.tls.DTLSReliableHandshake".equals(
+            if ("org.bouncycastle.tls.DTLSReliableHandshake".equals(
                         stackTraceElement.getClassName())
                     && "receiveMessage".equals(
                             stackTraceElement.getMethodName()))
@@ -503,7 +503,7 @@ public class DatagramTransportImpl
                 case HandshakeType.client_key_exchange:
                 case HandshakeType.server_hello:
                 case HandshakeType.server_key_exchange:
-                case HandshakeType.session_ticket:
+                case HandshakeType.new_session_ticket:
                 case HandshakeType.supplemental_data:
                     endOfFlight = false;
                     break;

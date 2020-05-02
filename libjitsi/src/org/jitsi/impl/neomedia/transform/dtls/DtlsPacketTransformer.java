@@ -20,7 +20,7 @@ import java.io.*;
 import java.security.*;
 import java.util.*;
 
-import org.bouncycastle.crypto.tls.*;
+import org.bouncycastle.tls.*;
 import org.jitsi.impl.neomedia.*;
 import org.jitsi.impl.neomedia.transform.*;
 import org.jitsi.impl.neomedia.transform.srtp.*;
@@ -30,6 +30,8 @@ import org.jitsi.service.neomedia.*;
 import org.jitsi.util.*;
 import org.jitsi.utils.*;
 import org.jitsi.utils.logging.*;
+import org.bouncycastle.tls.crypto.impl.bc.BcTlsCrypto;
+import org.bouncycastle.tls.crypto.impl.bc.BcTlsSecret;
 
 /**
  * Implements {@link PacketTransformer} for DTLS-SRTP. It's capable of working
@@ -647,7 +649,7 @@ public class DtlsPacketTransformer
                         ExporterLabel.dtls_srtp,
                         null,
                         2 * (cipher_key_length + cipher_salt_length),
-                        sessionParameters.getMasterSecret()
+                        sessionParameters.getMasterSecret().extract()
                 );
             }
         }
@@ -1246,12 +1248,12 @@ public class DtlsPacketTransformer
 
         if (DtlsControl.Setup.ACTIVE.equals(setup))
         {
-            dtlsProtocolObj = new DTLSClientProtocol(new SecureRandom());
+            dtlsProtocolObj = new DTLSClientProtocol();
             tlsPeer = new TlsClientImpl(this);
         }
         else
         {
-            dtlsProtocolObj = new DTLSServerProtocol(new SecureRandom());
+            dtlsProtocolObj = new DTLSServerProtocol();
             tlsPeer = new TlsServerImpl(this);
         }
         tlsPeerHasRaisedCloseNotifyWarning = false;
@@ -1774,6 +1776,6 @@ public class DtlsPacketTransformer
             throw new IllegalStateException("error in calculation of seed for export");
         }
 
-        return TlsUtils.PRF(context, masterSecret, asciiLabel, seed, length);
+        return TlsUtils.PRF(context, new BcTlsSecret(new BcTlsCrypto(new SecureRandom()), masterSecret), asciiLabel, seed, length).extract();
     }
 }

@@ -18,8 +18,10 @@ package org.jitsi.impl.neomedia.transform.dtls;
 import java.io.*;
 import java.util.*;
 
-import org.bouncycastle.crypto.tls.*;
+import org.bouncycastle.tls.*;
 import org.jitsi.utils.logging.*;
+import java.security.SecureRandom;
+import org.bouncycastle.tls.crypto.impl.bc.BcTlsCrypto;
 
 /**
  * Implements {@link TlsServer} for the purposes of supporting DTLS-SRTP.
@@ -57,18 +59,6 @@ public class TlsServerImpl
     private final DtlsPacketTransformer packetTransformer;
 
     /**
-     *
-     * @see DefaultTlsServer#getRSAEncryptionCredentials()
-     */
-    private TlsEncryptionCredentials rsaEncryptionCredentials;
-
-    /**
-     *
-     * @see DefaultTlsServer#getRSASignerCredentials()
-     */
-    private TlsSignerCredentials rsaSignerCredentials;
-
-    /**
      * Initializes a new <tt>TlsServerImpl</tt> instance.
      *
      * @param packetTransformer the <tt>PacketTransformer</tt> which is
@@ -76,6 +66,7 @@ public class TlsServerImpl
      */
     public TlsServerImpl(DtlsPacketTransformer packetTransformer)
     {
+        super(new BcTlsCrypto(new SecureRandom()));
         this.packetTransformer = packetTransformer;
     }
 
@@ -108,7 +99,7 @@ public class TlsServerImpl
      * Forward Secrecy.
      */
     @Override
-    protected int[] getCipherSuites()
+    public int[] getCipherSuites()
     {
         return new int[]
         {
@@ -161,80 +152,14 @@ public class TlsServerImpl
      * writing.
      */
     @Override
-    protected ProtocolVersion getMaximumVersion()
+    public ProtocolVersion[] getProtocolVersions()
     {
-        return ProtocolVersion.DTLSv10;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected ProtocolVersion getMinimumVersion()
-    {
-        return ProtocolVersion.DTLSv10;
+        return new ProtocolVersion[]{ProtocolVersion.DTLSv10};
     }
 
     private Properties getProperties()
     {
         return packetTransformer.getProperties();
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * Depending on the <tt>selectedCipherSuite</tt>, <tt>DefaultTlsServer</tt>
-     * will require either <tt>rsaEncryptionCredentials</tt> or
-     * <tt>rsaSignerCredentials</tt> neither of which is implemented by
-     * <tt>DefaultTlsServer</tt>.
-     */
-    @Override
-    protected TlsEncryptionCredentials getRSAEncryptionCredentials()
-        throws IOException
-    {
-        if (rsaEncryptionCredentials == null)
-        {
-            CertificateInfo certificateInfo
-                = getDtlsControl().getCertificateInfo();
-
-            rsaEncryptionCredentials
-                = new DefaultTlsEncryptionCredentials(
-                        context,
-                        certificateInfo.getCertificate(),
-                        certificateInfo.getKeyPair().getPrivate());
-        }
-        return rsaEncryptionCredentials;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * Depending on the <tt>selectedCipherSuite</tt>, <tt>DefaultTlsServer</tt>
-     * will require either <tt>rsaEncryptionCredentials</tt> or
-     * <tt>rsaSignerCredentials</tt> neither of which is implemented by
-     * <tt>DefaultTlsServer</tt>.
-     */
-    @Override
-    protected TlsSignerCredentials getRSASignerCredentials()
-        throws IOException
-    {
-        if (rsaSignerCredentials == null)
-        {
-            CertificateInfo certificateInfo
-                = getDtlsControl().getCertificateInfo();
-
-            // FIXME The signature and hash algorithms should be retrieved from
-            // the certificate.
-            rsaSignerCredentials
-                = new DefaultTlsSignerCredentials(
-                        context,
-                        certificateInfo.getCertificate(),
-                        certificateInfo.getKeyPair().getPrivate(),
-                        new SignatureAndHashAlgorithm(
-                                HashAlgorithm.sha1,
-                                SignatureAlgorithm.rsa));
-        }
-        return rsaSignerCredentials;
     }
 
     /**
@@ -248,7 +173,7 @@ public class TlsServerImpl
     public Hashtable getServerExtensions()
         throws IOException
     {
-        Hashtable serverExtensions = getServerExtensionsOverride();
+        Hashtable serverExtensions = super.getServerExtensions();
 
         if (isSrtpDisabled())
         {
@@ -293,71 +218,6 @@ public class TlsServerImpl
                 this.chosenProtectionProfile = chosenProtectionProfile;
             }
         }
-        return serverExtensions;
-    }
-
-    /**
-     * FIXME: If Client Hello does not include points format extensions then
-     * we will end up with alert 47 failure caused by NPE on
-     * serverECPointFormats. It was causing JitsiMeet to fail with Android
-     * version of Chrome.
-     *
-     * The fix has been posted upstream and this method should be removed once
-     * it is published.
-     */
-    @SuppressWarnings("rawtypes")
-    private Hashtable getServerExtensionsOverride()
-        throws IOException
-    {
-        if (encryptThenMACOffered && allowEncryptThenMAC())
-        {
-            // draft-ietf-tls-encrypt-then-mac-03 3. If a server receives an
-            // encrypt-then-MAC request extension from a client and then selects
-            // a stream or AEAD cipher suite, it MUST NOT send an
-            // encrypt-then-MAC response extension back to the client.
-            if (TlsUtils.isBlockCipherSuite(selectedCipherSuite))
-            {
-                TlsExtensionsUtils.addEncryptThenMACExtension(
-                        checkServerExtensions());
-            }
-        }
-
-        if (maxFragmentLengthOffered >= 0
-                && MaxFragmentLength.isValid(maxFragmentLengthOffered))
-        {
-            TlsExtensionsUtils.addMaxFragmentLengthExtension(
-                    checkServerExtensions(),
-                    maxFragmentLengthOffered);
-        }
-
-        if (truncatedHMacOffered && allowTruncatedHMac())
-        {
-            TlsExtensionsUtils.addTruncatedHMacExtension(
-                    checkServerExtensions());
-        }
-
-        if (TlsECCUtils.isECCCipherSuite(selectedCipherSuite))
-        {
-            /*
-             * RFC 4492 5.2. A server that selects an ECC cipher suite in
-             * response to a ClientHello message including a Supported Point
-             * Formats Extension appends this extension (along with others) to
-             * its ServerHello message, enumerating the point formats it can
-             * parse.
-             */
-            serverECPointFormats
-                = new short[]
-                {
-                    ECPointFormat.uncompressed,
-                    ECPointFormat.ansiX962_compressed_prime,
-                    ECPointFormat.ansiX962_compressed_char2,
-                };
-
-            TlsECCUtils.addSupportedPointFormatsExtension(
-                    checkServerExtensions(),
-                    serverECPointFormats);
-        }
-
         return serverExtensions;
     }
 

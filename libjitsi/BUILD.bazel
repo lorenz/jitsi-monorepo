@@ -20,6 +20,7 @@ java_library(
         "@maven//:net_java_dev_jna_jna",
         "@maven//:org_bouncycastle_bcpkix_jdk15on",
         "@maven//:org_bouncycastle_bcprov_jdk15on",
+        "@maven//:org_bouncycastle_bctls_jdk15on",
         "@maven//:org_jetbrains_annotations",
         "@maven//:org_opentelecoms_sdp_java_sdp_nist_bridge",
         "@maven//:org_opentelecoms_sdp_sdp_api",

@@ -46,10 +46,7 @@ public class CryptoBenchmark
         }
 
         Provider sunPKCS11
-            = new sun.security.pkcs11.SunPKCS11(
-                    "--name=CryptoBenchmark\\n"
-                        + "nssDbMode=noDb\\n"
-                        + "attributes=compatibility");
+            = new sun.security.pkcs11.SunPKCS11();
         Provider sunJCE = Security.getProvider("SunJCE");
 
 //        for (Provider provider : new Provider[] { sunPKCS11, sunJCE })

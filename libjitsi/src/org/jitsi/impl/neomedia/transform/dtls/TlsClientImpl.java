@@ -18,8 +18,12 @@ package org.jitsi.impl.neomedia.transform.dtls;
 import java.io.*;
 import java.util.*;
 
-import org.bouncycastle.crypto.tls.*;
+import org.bouncycastle.tls.*;
 import org.jitsi.utils.logging.*;
+import java.security.SecureRandom;
+import org.bouncycastle.tls.crypto.impl.bc.BcTlsCrypto;
+import org.bouncycastle.tls.crypto.impl.bc.BcDefaultTlsCredentialedSigner;
+import org.bouncycastle.tls.crypto.TlsCryptoParameters;
 
 /**
  * Implements {@link TlsClient} for the purposes of supporting DTLS-SRTP.
@@ -65,6 +69,7 @@ public class TlsClientImpl
      */
     public TlsClientImpl(DtlsPacketTransformer packetTransformer)
     {
+        super(new BcTlsCrypto(new SecureRandom()));
         this.packetTransformer = packetTransformer;
     }
 
@@ -98,11 +103,11 @@ public class TlsClientImpl
      * Forward Secrecy.
      */
     @Override
-    public int[] getCipherSuites()
+    protected int[] getSupportedCipherSuites()
     {
-        return new int[]
+        int[] suites = new int[]
         {
-/* core/src/main/java/org/bouncycastle/crypto/tls/DefaultTlsClient.java */
+            /* core/src/main/java/org/bouncycastle/crypto/tls/DefaultTlsClient.java */
             CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
             CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
             CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,
@@ -116,6 +121,7 @@ public class TlsClientImpl
             CipherSuite.TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,
             CipherSuite.TLS_DHE_RSA_WITH_AES_128_CBC_SHA,
         };
+        return TlsUtils.getSupportedCipherSuites(getCrypto(), suites);
     }
 
     /**
@@ -154,9 +160,9 @@ public class TlsClientImpl
      * writing.
      */
     @Override
-    public ProtocolVersion getClientVersion()
+    public ProtocolVersion[] getProtocolVersions()
     {
-        return ProtocolVersion.DTLSv10;
+        return new ProtocolVersion[]{ProtocolVersion.DTLSv10};
     }
 
     /**
@@ -183,14 +189,6 @@ public class TlsClientImpl
         return packetTransformer.getDtlsControl();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ProtocolVersion getMinimumVersion()
-    {
-        return ProtocolVersion.DTLSv10;
-    }
 
     private Properties getProperties()
     {
@@ -347,10 +345,11 @@ public class TlsClientImpl
                 // FIXME The signature and hash algorithms should be retrieved
                 // from the certificate.
                 clientCredentials
-                    = new DefaultTlsSignerCredentials(
-                            context,
-                            certificateInfo.getCertificate(),
+                    = new BcDefaultTlsCredentialedSigner(
+                            new TlsCryptoParameters(context),
+                            new BcTlsCrypto(new SecureRandom()),
                             certificateInfo.getKeyPair().getPrivate(),
+                            certificateInfo.getCertificate(),
                             new SignatureAndHashAlgorithm(
                                     HashAlgorithm.sha1,
                                     SignatureAlgorithm.rsa));
@@ -362,13 +361,13 @@ public class TlsClientImpl
          * {@inheritDoc}
          */
         @Override
-        public void notifyServerCertificate(Certificate serverCertificate)
+        public void notifyServerCertificate(TlsServerCertificate serverCertificate)
             throws IOException
         {
             try
             {
                 getDtlsControl().verifyAndValidateCertificate(
-                        serverCertificate);
+                        serverCertificate.getCertificate());
             }
             catch (Exception e)
             {
